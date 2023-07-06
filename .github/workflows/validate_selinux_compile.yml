@@ -1,0 +1,140 @@
+#
+# SELinux code validation workflow
+#
+name: "Validate SELinux code"
+
+concurrency: 
+  group: SELinux_compile_wkf_group
+
+
+on:
+  workflow_dispatch:
+
+  push:
+    paths:
+      - '**.te'
+      - '**.fc'
+      - '**.if'
+      
+  pull_request:
+    branches: [ "main", "release/**" ]
+    paths:
+      - '**.te'
+      - '**.fc'
+      - '**.if'
+
+env:
+  SEMODULE: sybase
+
+jobs:
+
+  compile_centos7:
+    name: Validate SELinux code (CentOS 7)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: hubertqc/selinux_compile@centos7
+
+  compile_centos8:
+    name: Validate SELinux code (CentOS 8)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: hubertqc/selinux_compile@centos8
+
+  compile_centos9:
+    name: Validate SELinux code (CentOS 9)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: hubertqc/selinux_compile@centos9
+
+  compile_fedora36:
+    name: Validate SELinux code (Fedora 36)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: hubertqc/selinux_compile@fedora36
+
+  compile_fedora37:
+    name: Validate SELinux code (Fedora 37)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: hubertqc/selinux_compile@fedora37
+
+  compile_fedora38:
+    name: Validate SELinux code (Fedora 38)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: hubertqc/selinux_compile@fedora38
+
+
+  semodule_info:
+    name: Get SELinux module informations
+    needs: [ compile_centos7, compile_centos8, compile_centos9, compile_fedora36, compile_fedora37, compile_fedora38 ]
+      
+    runs-on: ubuntu-latest
+    
+    permissions:
+      actions: read
+      contents: read
+
+    outputs:
+      semodule_name: ${{ steps.semodule_chars.outputs.semodule_name }}
+      semodule_vers: ${{ steps.semodule_chars.outputs.semodule_vers }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Get SELinux policy module characteristics
+        id: semodule_chars
+        run: |
+          awk '
+          /^[[:blank:]]*module[[:blank:]]+/ {
+            sub("[[:blank:]]*;$", "")
+            module_name=$2
+            module_vers=$3
+          }
+          /^[[:blank:]]*policy_module[[:blank:]]*\(/ {
+            sub("^[[:blank:]]*policy_module[[:blank:]]*[(][[:blank:]]*", "")
+            sub("[[:blank:]]*)[[:blank:]]*$", "")
+            split($0, a, "[[:blank:]]*,[[:blank:]]*")
+            module_name=a[1]
+            module_vers=a[2]
+          }
+          END {
+            print "::set-output name=semodule_name::"module_name
+            print "::set-output name=semodule_vers::"module_vers
+          }' se_module/${SEMODULE}.te
+
+
+  add_tag:
+    name: Add SELinux module version tag on the branch
+    needs: semodule_info
+
+    runs-on: ubuntu-latest
+
+    if: ( github.event_name == 'push' && ( github.ref_name == 'main' || startsWith(github.ref_name, 'release/') ) )
+    
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Tag the branch with the SELinux module version and draft a pre-release
+        uses: actions/create-release@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ needs.semodule_info.outputs.semodule_vers }}-rc
+          release_name: Release candidate for v${{ needs.semodule_info.outputs.semodule_vers }}
+          draft: true
+          prerelease: true
+      

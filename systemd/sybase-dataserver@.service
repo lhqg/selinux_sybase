@@ -1,0 +1,34 @@
+[Unit]
+Description=Sybase ASE DataServer for %I
+
+Requires=network-online.target multi-user.target time-sync.target
+Wants=sshd.service
+After=network-online.target multi-user.target time-sync.target sshd.service
+
+Conflicts=sybase-shutdown@%I.target sybase-shutdown.target
+Conflicts=shutdown.target
+
+[Service]
+Type=simple
+
+User=sybase
+Group=sybase
+
+Environment=LANG=default
+Environment=SYB_DS_master_dev="{{ sybase_dataserver_master_dev }}"
+
+EnvironmentFile=/opt/sybase/SYBASE.sh
+EnvironmentFile=-/opt/sybase/SYBASE-%I.env
+
+WorkingDirectory=/opt/sybase/ase/install
+
+ExecStartPre=-/usr/bin/mv -n /var/log/sybase/%I/dataserver.log /var/log/sybase/%I/dataserver.log.prev
+ExecStart=/opt/sybase/ase/bin/dataserver -d${SYB_DS_master_dev} -e/var/log/sybase/%I/dataserver.log -c/opt/sybase/ase/%I.cfg -M/opt/sybase/ase -N/opt/sybase/ase/sysam/%I.properties -i/opt/sybase -s%I
+
+TimeoutStartSec=240s
+
+GuessMainPID=no
+
+[Install]
+WantedBy=sybase@%i.target
+RequiredBy=sybase-backupserver@%i.service

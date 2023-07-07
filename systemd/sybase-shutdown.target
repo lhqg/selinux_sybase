@@ -1,0 +1,8 @@
+[Unit]
+Description=Shut down  all Sybase services
+
+Before=shutdown.target
+
+[Install]
+WantedBy=shutdown.target
+

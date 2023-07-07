@@ -8,7 +8,7 @@
 /opt/sybase/.*/[^/]+\.so(\.[^/]+)*                  --  gen_context(system_u:object_r:sybase_lib_t,s0)
 #
 /opt/sybase(/.*)?/conf(ig)?(/.*)?                       gen_context(system_u:object_r:sybase_conf_t,s0)
-/opt/sybase(/.*)?/[^/]+\.(cfg|conf|properties)      --  gen_context(system_u:object_r:sybase_conf_t,s0)
+/opt/sybase(/.*)?/[^/]+\.(env|cfg|conf|properties)  --  gen_context(system_u:object_r:sybase_conf_t,s0)
 #
 /opt/sybase(/.*)?/data(/.*)?                            gen_context(system_u:object_r:sybase_db_t,s0)
 /var/opt/sybase(/.*)?                                   gen_context(system_u:object_r:sybase_db_t,s0)

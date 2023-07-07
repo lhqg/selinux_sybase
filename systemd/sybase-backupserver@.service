@@ -1,0 +1,31 @@
+[Unit]
+Description=Sybase ASE BackupServer for %I
+
+Requires=network-online.target multi-user.target time-sync.target
+Wants=sshd.service
+After=network-online.target multi-user.target time-sync.target sshd.service
+
+Conflicts=sybase-shutdown@%I.target sybase-shutdown.target
+Conflicts=shutdown.target
+
+[Service]
+Type=simple
+User=sybase
+Group=sybase
+
+Environment=LANG=default
+Environment=SDsybase__BS_network_connections=15
+Environment=SDsybase__BS_server_connections=10
+
+EnvironmentFile=/opt/sybase/SYBASE.sh
+EnvironmentFile=/opt/sybase/SYBASE-%I.env
+
+WorkingDirectory=/opt/sybase/ase/install
+
+ExecStartPre=-/usr/bin/mv -n /var/log/sybase/%I/backupserver.log /var/log/sybase/%I/backupserver.log.prev
+ExecStart=/opt/sybase/ase/bin/backupserver -e/var/log/sybase/%I/backupserver.log -N${SDsybase__BS_network_connections} -C${SDsybase__BS_server_connections} -I/opt/sybase/interfaces -M/opt/sybase/ase/bin/sybmultbuf -S%I_BS
+
+GuessMainPID=no
+
+[Install]
+WantedBy=sybase@%i.target

@@ -1,0 +1,266 @@
+policy_module(sybase, 0.1.0)
+
+########################################
+#
+# Declarations
+#
+########################################
+
+attribute sybase_db_domain;
+
+attribute sybase_db_type;
+attribute sybase_file_type;
+attribute sybase_exec_type;
+attribute sybase_port_type;
+
+
+type sybase_t;
+application_type(sybase_t)
+typeattribute sybase_t sybase_db_domain;
+
+type  sybase_exec_t;
+application_executable_file(sybase_exec_t)
+typeattribute sybase_exec_t sybase_exec_type;
+typeattribute sybase_exec_t sybase_file_type;
+
+type sybase_bin_t;
+corecmd_executable_file(sybase_bin_t)
+typeattribute sybase_bin_t sybase_file_type;
+
+type sybase_lib_t;
+files_type(sybase_lib_t)
+typeattribute sybase_lib_t sybase_file_type;
+
+type sybase_conf_t;
+logging_log_file(sybase_conf_t)
+typeattribute sybase_conf_t sybase_file_type;
+
+type sybase_var_t;
+files_type(sybase_var_t)
+typeattribute sybase_var_t sybase_file_type;
+
+type sybase_run_t;
+files_type(sybase_run_t)
+typeattribute sybase_run_t sybase_file_type;
+
+type sybase_tmp_t;
+files_tmp_file(sybase_tmp_t)
+typeattribute sybase_tmp_t sybase_file_type;
+
+type sybase_log_t;
+files_config_file(sybase_log_t)
+typeattribute sybase_log_t sybase_file_type;
+
+type sybase_db_t;
+files_type(sybase_db_t)
+typeattribute sybase_db_t sybase_db_type;
+
+type            sybase_unit_file_t;
+systemd_unit_file(sybase_unit_file_t);
+
+type  sybase_port_t;
+corenet_port(sybase_port_t)
+typeattribute sybase_port_t sybase_port_type;
+
+########################################
+#
+# Requires
+#
+########################################
+
+gen_require(`
+    attribute unconfined_domain_type;
+    attribute initrc_transition_domain;
+    attribute confined_admindomain;
+
+    type      unconfined_t;
+    type      unconfined_service_t;
+    type      initrc_t;
+    type      init_t;
+    
+    type      sysadm_t;
+    type      dbadm_t;
+
+    type      tmpfs_t;
+
+    role      unconfined_r;
+    role      system_r;
+')
+
+########################################
+#
+# Application domain definition
+#
+########################################
+
+init_daemon_domain(sybase_t, sybase_exec_t)
+
+role  system_r  types sybase_db_domain;
+
+########################################
+#
+# Accesses
+#
+########################################
+
+#
+## Generic permissions for sybase_t domain
+#
+
+files_read_etc_files(sybase_db_domain)
+sysnet_read_config(sybase_db_domain)
+
+corecmd_read_bin_files(sybase_db_domain)
+corecmd_exec_bin(sybase_db_domain)
+corecmd_exec_shell(sybase_db_domain)
+
+files_read_var_files(sybase_db_domain)
+files_read_var_symlinks(sybase_db_domain)
+files_read_var_lib_files(sybase_db_domain)
+
+files_search_locks(sybase_db_domain)
+
+libs_exec_lib_files(sybase_db_domain)
+libs_use_shared_libs(sybase_db_domain)
+
+fs_read_cgroup_files(sybase_db_domain)
+
+fs_getattr_xattr_fs(sybase_db_domain)
+
+dev_read_rand(sybase_db_domain)
+
+auth_read_passwd(sybase_db_domain)
+fs_getattr_tmpfs(sybase_db_domain)
+
+hostname_exec(sybase_db_domain)
+iptables_exec(sybase_db_domain)
+mount_exec_fusermount(sybase_db_domain)
+
+corenet_tcp_bind_generic_node(sybase_db_domain)
+corenet_tcp_sendrecv_generic_node(sybase_db_domain)
+
+logging_send_syslog_msg(sybase_t)
+logging_send_audit_msgs(sybase_t)
+
+#
+## Specific permissions for sybase_t domain on sybase related objetcs
+#
+
+allow sybase_db_domain  sybase_file_type:dir        list_dir_perms;
+allow sybase_db_domain  sybase_file_type:file       read_file_perms;
+allow sybase_db_domain  sybase_file_type:lnk_file   read_lnk_file_perms;
+allow sybase_db_domain  sybase_file_type:fifo_file  manage_fifo_file_perms;
+allow sybase_db_domain  sybase_file_type:sock_file  manage_sock_file_perms;
+
+allow sybase_db_domain  sybase_exec_type:file       exec_file_perms;
+
+allow sybase_db_domain  sybase_db_type:dir          rw_dir_perms;
+allow sybase_db_domain  sybase_db_type:file         manage_file_perms;
+allow sybase_db_domain  sybase_db_type:lnk_file     manage_lnk_file_perms;
+
+allow sybase_db_domain  sybase_bin_t:file           exec_file_perms;
+allow sybase_db_domain  sybase_lib_t:file           exec_file_perms;
+
+allow sybase_db_domain  sybase_tmp_t:dir            manage_dir_perms;
+allow sybase_db_domain  sybase_tmp_t:file           manage_file_perms;
+
+allow sybase_db_domain  sybase_run_t:dir            rw_dir_perms;
+allow sybase_db_domain  sybase_run_t:file           manage_file_perms;
+
+allow sybase_db_domain  sybase_log_t:file           { create_file_perms append_file_perms };
+
+allow sybase_db_domain  sybase_port_type:tcp_socket { name_bind name_connect };
+
+#
+##
+#
+allow sybase_db_domain  sybase_db_domain:tcp_socket           create_stream_socket_perms;
+allow sybase_db_domain  sybase_db_domain:netlink_route_socket { bind create getattr nlmsg_read };
+
+
+allow sybase_db_domain  sybase_db_domain:sem        create_sem_perms;
+allow sybase_db_domain  sybase_db_domain:shm        create_shm_perms;
+allow sybase_db_domain  sybase_db_domain:msgq       create_msgq_perms;
+
+allow sybase_db_domain  sybase_db_domain:msg        { receive send };
+
+#
+## Specific permissions for admin domains on sybase related objetcs
+#
+
+allow confined_admindomain  sybase_file_type:dir        list_dir_perms;
+allow confined_admindomain  sybase_file_type:file       getattr_file_perms;
+allow confined_admindomain  sybase_file_type:lnk_file   read_lnk_file_perms;
+allow confined_admindomain  sybase_file_type:fifo_file  getattr_fifo_file_perms;
+allow confined_admindomain  sybase_file_type:sock_file  getattr_sock_file_perms;
+
+allow confined_admindomain  sybase_db_type:dir          list_dir_perms;
+allow confined_admindomain  sybase_db_type:file         getattr_file_perms;
+allow confined_admindomain  sybase_db_type:lnk_file     read_lnk_file_perms;
+
+allow confined_admindomain  sybase_conf_t:file          read_file_perms;
+allow confined_admindomain  sybase_var_t:file           read_file_perms;
+allow confined_admindomain  sybase_run_t:file           read_file_perms;
+allow confined_admindomain  sybase_bin_t:file           exec_file_perms;
+allow confined_admindomain  sybase_lib_t:file           read_file_perms;
+allow confined_admindomain  sybase_log_t:file           read_file_perms;
+
+allow dbadm_t sybase_conf_t:dir           manage_dir_perms;
+allow dbadm_t sybase_conf_t:file          manage_file_perms;
+allow dbadm_t sybase_conf_t:lnk_file      manage_lnk_file_perms;
+
+allow dbadm_t sybase_var_t:dir            manage_dir_perms;
+allow dbadm_t sybase_var_t:file           manage_file_perms;
+allow dbadm_t sybase_var_t:lnk_file       manage_lnk_file_perms;
+
+allow dbadm_t sybase_tmp_t:dir            manage_dir_perms;
+allow dbadm_t sybase_tmp_t:file           manage_file_perms;
+allow dbadm_t sybase_tmp_t:lnk_file       manage_lnk_file_perms;
+
+allow dbadm_t sybase_log_t:dir            manage_dir_perms;
+allow dbadm_t sybase_log_t:file           manage_file_perms;
+allow dbadm_t sybase_log_t:lnk_file       manage_lnk_file_perms;
+
+allow dbadm_t sybase_port_type:tcp_socket name_connect;
+
+allow dbadm_t   sybase_unit_file_t:file     read_file_perms;
+allow dbadm_t   sybase_unit_file_t:service  manage_service_perms;
+
+allow sysadm_t  sybase_unit_file_t:file     read_file_perms;
+allow sysadm_t  sybase_unit_file_t:service  manage_service_perms;
+
+########################################
+#
+# File transitions
+#
+########################################
+
+filetrans_pattern(unconfined_domain_type, sybase_db_t,  sybase_db_t,  { dir file lnk_file sock_file fifo_file })
+filetrans_pattern(unconfined_domain_type, sybase_tmp_t, sybase_tmp_t, { dir file lnk_file sock_file fifo_file })
+filetrans_pattern(unconfined_domain_type, sybase_var_t, sybase_var_t, { dir file lnk_file sock_file fifo_file })
+
+filetrans_pattern(sybase_db_domain,       sybase_db_t,  sybase_db_t,  { dir file lnk_file sock_file fifo_file })
+filetrans_pattern(sybase_db_domain,       sybase_tmp_t, sybase_tmp_t, { dir file lnk_file sock_file fifo_file })
+filetrans_pattern(sybase_db_domain,       sybase_run_t, sybase_run_t, { dir file lnk_file sock_file fifo_file })
+
+fs_tmpfs_filetrans(sybase_db_domain, sybase_tmp_t, { dir file lnk_file })
+
+filetrans_add_pattern(sybase_db_domain,   sybase_log_t, sybase_log_t, { dir file lnk_file })
+
+filetrans_add_pattern(dbadm_t,  sybase_var_t,   sybase_var_t,   { dir file lnk_file })
+filetrans_add_pattern(dbadm_t,  sybase_tmp_t,   sybase_tmp_t,   { dir file lnk_file })
+filetrans_add_pattern(dbadm_t,  sybase_conf_t,  sybase_conf_t,  { dir file lnk_file })
+
+########################################
+#
+# Force transition to sybase_t domain
+#
+########################################
+
+domtrans_pattern(initrc_transition_domain,  sybase_exec_t,  sybase_t)
+
+
+allow initrc_transition_domain  sybase_db_domain:process2       nosuid_transition;
+allow initrc_t                  sybase_db_domain:process2       nosuid_transition;
+
+permissive sybase_t;

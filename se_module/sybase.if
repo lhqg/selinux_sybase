@@ -1,0 +1,25 @@
+#######################################
+## <summary>
+##      This interface allows a domain to 
+##      connect to a Sybase DB/server via the network
+## </summary>
+## <desc>
+##      <p>
+##      This interface grants the permission to connect to
+##      a Sybase TCP port.
+##      </p>
+## </desc>
+## <param name="domain">
+##      <summary>
+##      The domain to grant connect permission to.
+##      </summary>
+## </param>
+
+interface(`sybase_client',`
+        gen_require(`
+                type $1_t;
+                type sybase_port_t;
+        ')
+
+        allow   $1  sybase_port_t:tcp_socket    name_connect;
+')

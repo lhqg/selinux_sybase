@@ -18,7 +18,8 @@
 interface(`sybase_client',`
         gen_require(`
                 type $1_t;
-                type sybase_port_t;
+                
+                type            sybase_port_t;
         ')
 
         allow   $1_t  sybase_port_t:tcp_socket    name_connect;

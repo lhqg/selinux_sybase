@@ -7,6 +7,7 @@ policy_module(sybase, 0.3.0)
 ########################################
 
 attribute sybase_db_domain;
+attribute sybase_client_domain;
 
 attribute sybase_db_type;
 attribute sybase_file_type;
@@ -84,6 +85,7 @@ gen_require(`
     attribute unconfined_domain_type;
     attribute initrc_transition_domain;
     attribute confined_admindomain;
+    attribute domain;
 
     type      unconfined_t;
     type      unconfined_service_t;
@@ -270,6 +272,25 @@ filetrans_add_pattern(dbadm_t,  sybase_conf_t,  sybase_conf_t,  { dir file lnk_f
 
 ########################################
 #
+# Permissions for client domains
+#
+########################################
+
+allow   sybase_client_domain    sybase_port_t:tcp_socket    name_connect;
+    
+allow   sybase_client_domain    sybase_file_type:{ dir file lnk_file }    getattr;
+allow   sybase_client_domain    sybase_file_type:lnk_file                 read_lnk_file_perms;
+
+allow   sybase_client_domain    sybase_usr_t:dir          list_dir_perms;
+
+allow   sybase_client_domain    sybase_lib_t:dir          list_dir_perms;
+allow   sybase_client_domain    sybase_lib_t:file         read_file_perms;
+
+allow   sybase_client_domain    sybase_bin_t:dir          list_dir_perms;
+allow   sybase_client_domain    sybase_bin_t:file         exec_file_perms;
+
+########################################
+#
 # Force transition to sybase_t domain
 #
 ########################################
@@ -279,5 +300,9 @@ domtrans_pattern(initrc_transition_domain,  sybase_exec_t,  sybase_t)
 
 allow initrc_transition_domain  sybase_db_domain:process2       nosuid_transition;
 allow initrc_t                  sybase_db_domain:process2       nosuid_transition;
+
+allow domain                    sybase_usr_t:dir        search_dir_perms;
+allow domain                    sybase_usr_t:file       getattr;
+allow domain                    sybase_usr_t:lnk_file   getattr;
 
 permissive sybase_t;

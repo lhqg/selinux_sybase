@@ -182,7 +182,7 @@ allow sybase_db_domain  sybase_port_type:tcp_socket { name_bind name_connect };
 ##
 #
 
-allow sybase_db_domain  self:process    { execmem strlimit };
+allow sybase_db_domain  self:process    { execmem setrlimit };
 
 allow sybase_db_domain  sybase_db_domain:tcp_socket           create_stream_socket_perms;
 allow sybase_db_domain  sybase_db_domain:netlink_route_socket { bind create getattr nlmsg_read };

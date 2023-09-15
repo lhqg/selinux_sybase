@@ -1,6 +1,8 @@
 #
 /(lib|etc)/systemd/system/sybase(-[^/@]+)?@?\..*        gen_context(system_u:object_r:sybase_unit_file_t,s0)
 #
+/opt/sybase(/.*)?                  						gen_context(system_u:object_r:sybase_usr_t,s0)
+#
 /opt/sybase(/.*)?/(bin|scripts?)(/.*)?                  gen_context(system_u:object_r:sybase_bin_t,s0)
 /opt/sybase/.*/[^/]+\.(b|ba|c|k|z)?sh               --  gen_context(system_u:object_r:sybase_bin_t,s0)
 #
@@ -9,6 +11,8 @@
 #
 /opt/sybase(/.*)?/conf(ig)?(/.*)?                       gen_context(system_u:object_r:sybase_conf_t,s0)
 /opt/sybase(/.*)?/[^/]+\.(env|cfg|conf|properties)  --  gen_context(system_u:object_r:sybase_conf_t,s0)
+/opt/sybase(/.*)?/sysam/[^/]+\.properties  			--  gen_context(system_u:object_r:sybase_dynconf_t,s0)
+/opt/sybase(/.*)?/(ASE[^/]*|ase)/[^/]+\.(krg|bak)  	--  gen_context(system_u:object_r:sybase_dynconf_t,s0)
 #
 /opt/sybase(/.*)?/data(/.*)?                            gen_context(system_u:object_r:sybase_db_t,s0)
 /var/opt/sybase(/.*)?                                   gen_context(system_u:object_r:sybase_db_t,s0)
@@ -16,9 +20,9 @@
 /opt/sybase(/.*)?/logs?(/.*)?                           gen_context(system_u:object_r:sybase_log_t,s0)
 /var/log/sybase(/.*)?                                   gen_context(system_u:object_r:sybase_log_t,s0)
 #
-/opt/sybase/(ASE|ase)(.*)?/bin/[^/]+server          --  gen_context(system_u:object_r:sybase_exec_t,s0)
+/opt/sybase/(ASE[^/]*|ase)(/.*)?/bin/[^/]+server    --  gen_context(system_u:object_r:sybase_exec_t,s0)
 #
-/opt/sybase/(ASE|ase)(.*)?/install(/.*)?                gen_context(system_u:object_r:sybase_run_t,s0)
+/opt/sybase/(ASE[^/]*|ase)(/.*)?/install(/.*)?          gen_context(system_u:object_r:sybase_run_t,s0)
 /opt/sybase(/.*)?/interfaces                        --  gen_context(system_u:object_r:sybase_run_t,s0)
 #
 /opt/sybase(/.*)?/(sample|[Tt]emplate|xml)s?(/.*)?      gen_context(system_u:object_r:sybase_var_t,s0)

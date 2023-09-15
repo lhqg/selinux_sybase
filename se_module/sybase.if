@@ -1,6 +1,33 @@
 #######################################
 ## <summary>
 ##      This interface allows a domain to 
+##      use Sybase binaries and libraries as a DB client
+## </summary>
+## <desc>
+##      <p>
+##      This interface grants the sybase_client_domain
+##      attribute.
+##      </p>
+## </desc>
+## <param name="domain">
+##      <summary>
+##      The domain to grant connect permission to.
+##      </summary>
+## </param>
+
+interface(`sybase_client',`
+        gen_require(`
+                type            $1_t;
+                
+                attribute       sybase_client_domain;
+        ')
+
+        typeattribute   $1_t    sybase_client_domain;
+')
+
+#######################################
+## <summary>
+##      This interface allows a domain to 
 ##      connect to a Sybase DB/server via the network
 ## </summary>
 ## <desc>
@@ -15,10 +42,11 @@
 ##      </summary>
 ## </param>
 
-interface(`sybase_client',`
+interface(`sybase_connect',`
         gen_require(`
                 type $1_t;
-                type sybase_port_t;
+                
+                type            sybase_port_t;
         ')
 
         allow   $1_t  sybase_port_t:tcp_socket    name_connect;

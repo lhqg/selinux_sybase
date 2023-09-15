@@ -1,0 +1,13 @@
+policy_module(test, 0.0.1)
+
+########################################
+#
+# Test sybase.if compilation
+#
+########################################
+
+type sybase_test1_t;
+type sybase_test2_t;
+
+sybase_client(sybase_test1)
+sybase_connect(sybase_test1)

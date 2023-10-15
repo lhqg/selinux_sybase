@@ -32,7 +32,6 @@ install -m 0444 %{_builddir}/systemd/sybase-dataserver@.service %{buildroot}/usr
 install -m 0444 %{_builddir}/systemd/sybase-backupserver@.service %{buildroot}/usr/lib/systemd/system/
 install -m 0444 %{_builddir}/systemd/sybase@.target %{buildroot}/usr/lib/systemd/system/
 install -m 0444 %{_builddir}/systemd/sybase.target %{buildroot}/usr/lib/systemd/system/
-install -m 0444 %{_builddir}/systemd/sybase-shutdown@.target %{buildroot}/usr/lib/systemd/system/
 install -m 0444 %{_builddir}/systemd/sybase-shutdown.target %{buildroot}/usr/lib/systemd/system/
 
 install -m 0444 %{_builddir}/systemd/env.SAMPLE %{buildroot}/%{_docdir}/%{name}/examples/
@@ -65,7 +64,6 @@ systemctl daemon-reload
 /usr/lib/systemd/system/sybase-backupserver@.service
 /usr/lib/systemd/system/sybase@.target
 /usr/lib/systemd/system/sybase.target
-/usr/lib/systemd/system/sybase-shutdown@.target
 /usr/lib/systemd/system/sybase-shutdown.target
   
 %dir		%{_docdir}/%{name}

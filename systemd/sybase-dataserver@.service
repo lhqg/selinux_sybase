@@ -5,8 +5,10 @@ Requires=network-online.target multi-user.target time-sync.target
 Wants=sshd.service
 After=network-online.target multi-user.target time-sync.target sshd.service
 
-Conflicts=sybase-shutdown@%I.target sybase-shutdown.target
+Conflicts=sybase-shutdown.target
 Conflicts=shutdown.target
+
+PartOf=sybase@%I.target
 
 [Service]
 Type=simple

@@ -1,4 +1,4 @@
-policy_module(sybase, 0.3.1)
+policy_module(sybase, 0.4.0)
 
 ########################################
 #
@@ -17,6 +17,7 @@ attribute sybase_port_type;
 type sybase_usr_t;
 type sybase_bin_t;
 type sybase_lib_t;
+type sybase_auth_t;
 type sybase_conf_t;
 type sybase_dynconf_t;
 type sybase_var_t;
@@ -48,6 +49,9 @@ typeattribute sybase_usr_t sybase_file_type;
 
 files_type(sybase_lib_t)
 typeattribute sybase_lib_t sybase_file_type;
+
+files_auth_file(sybase_auth_t)
+typeattribute sybase_auth_t sybase_file_type;
 
 files_config_file(sybase_conf_t)
 typeattribute sybase_conf_t sybase_file_type;
@@ -219,6 +223,10 @@ allow confined_admindomain  sybase_bin_t:file           exec_file_perms;
 allow confined_admindomain  sybase_lib_t:file           read_file_perms;
 allow confined_admindomain  sybase_log_t:file           read_file_perms;
 
+allow dbadm_t sybase_auth_t:dir           list_dir_perms;
+allow dbadm_t sybase_auth_t:file          getattr_file_perms;
+allow dbadm_t sybase_auth_t:lnk_file      read_lnk_file_perms;
+
 allow dbadm_t sybase_conf_t:dir           manage_dir_perms;
 allow dbadm_t sybase_conf_t:file          manage_file_perms;
 allow dbadm_t sybase_conf_t:lnk_file      manage_lnk_file_perms;
@@ -257,15 +265,17 @@ filetrans_pattern(unconfined_domain_type, sybase_db_t,  sybase_db_t,  { dir file
 filetrans_pattern(unconfined_domain_type, sybase_tmp_t, sybase_tmp_t, { dir file lnk_file sock_file fifo_file })
 filetrans_pattern(unconfined_domain_type, sybase_var_t, sybase_var_t, { dir file lnk_file sock_file fifo_file })
 
-filetrans_pattern(sybase_db_domain,       sybase_db_t,  sybase_db_t,  { dir file lnk_file sock_file fifo_file })
-filetrans_pattern(sybase_db_domain,       sybase_tmp_t, sybase_tmp_t, { dir file lnk_file sock_file fifo_file })
-filetrans_pattern(sybase_db_domain,       sybase_run_t, sybase_run_t, { dir file lnk_file sock_file fifo_file })
+filetrans_pattern(sybase_db_domain,       sybase_db_t,      sybase_db_t,        { dir file lnk_file sock_file fifo_file })
+filetrans_pattern(sybase_db_domain,       sybase_tmp_t,     sybase_tmp_t,       { dir file lnk_file sock_file fifo_file })
+filetrans_pattern(sybase_db_domain,       sybase_run_t,     sybase_run_t,       { dir file lnk_file sock_file fifo_file })
+filetrans_pattern(sybase_db_domain,       sybase_dynconf_t, sybase_dynconf_t,   file)
 
 fs_tmpfs_filetrans(sybase_db_domain, sybase_tmp_t, { dir file lnk_file })
 userdom_tmp_filetrans_user_tmp(sybase_t, { dir file lnk_file sock_file fifo_file })
 
-filetrans_add_pattern(sybase_db_domain,   sybase_usr_t, sybase_dynconf_t, file )
-filetrans_add_pattern(sybase_db_domain,   sybase_log_t, sybase_log_t, { dir file lnk_file })
+filetrans_add_pattern(sybase_db_domain,   sybase_usr_t,     sybase_dynconf_t, file )
+filetrans_add_pattern(sybase_db_domain,   sybase_conf_t,    sybase_dynconf_t, file )
+filetrans_add_pattern(sybase_db_domain,   sybase_log_t,     sybase_log_t, { dir file lnk_file })
 
 filetrans_add_pattern(dbadm_t,  sybase_var_t,   sybase_var_t,   { dir file lnk_file })
 filetrans_add_pattern(dbadm_t,  sybase_tmp_t,   sybase_tmp_t,   { dir file lnk_file })
@@ -273,7 +283,7 @@ filetrans_add_pattern(dbadm_t,  sybase_conf_t,  sybase_conf_t,  { dir file lnk_f
 
 ########################################
 #
-# Permissions for client domains
+# Permissions for local client domains
 #
 ########################################
 
@@ -284,6 +294,12 @@ allow   sybase_client_domain    sybase_file_type:lnk_file                 read_l
 
 allow   sybase_client_domain    sybase_usr_t:dir          list_dir_perms;
 allow   sybase_client_domain    sybase_usr_t:file         read_file_perms;
+
+allow   sybase_client_domain    sybase_conf_t:dir         list_dir_perms;
+allow   sybase_client_domain    sybase_conf_t:file        read_file_perms;
+
+allow   sybase_client_domain    sybase_dynconf_t:dir      list_dir_perms;
+allow   sybase_client_domain    sybase_dynconf_t:file     read_file_perms;
 
 allow   sybase_client_domain    sybase_lib_t:dir          list_dir_perms;
 allow   sybase_client_domain    sybase_lib_t:file         read_file_perms;
@@ -309,3 +325,5 @@ allow domain                    sybase_usr_t:lnk_file   read_lnk_file_perms;
 allow initrc_transition_domain  sybase_usr_t:file       read_file_perms;
 
 permissive sybase_t;
+
+dontaudit   sybase_t    domain:dir  getattr;

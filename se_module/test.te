@@ -11,3 +11,5 @@ type sybase_test2_t;
 
 sybase_client(sybase_test1)
 sybase_connect(sybase_test1)
+
+sybase_server_template(TEST)

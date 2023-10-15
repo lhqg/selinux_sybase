@@ -1,0 +1,23 @@
+#######################################
+## <summary>
+##      This macro defines fcontexts for
+##      a specific Sybase ASE server/instance
+## </summary>
+## <desc>
+##      <p>
+##      This macro defines fcontexts for
+##      a specific Sybase ASE server/instance
+##      MUST ONLY BE USED IN the .fc file
+##      </p>
+## </desc>
+## <param name="server">
+##      <summary>
+##      The name of the Sybase ASE server/instance
+##      </summary>
+## </param>
+
+define(`gen_sybase_server_context', `
+/opt/sybase/ASE-[^/]+/sysam/$1\.properties		--  gen_context(system_u:object_r:sybase_dynconf_t,s0)
+/opt/sybase/ASE-[^/]+/$1\.(krg|bak)				--  gen_context(system_u:object_r:sybase_dynconf_t,s0)        
+/opt/sybase/ASE-[^/]+/install/RUN_$1			--	gen_context(system_u:object_r:sybase_bin_t,s0)
+')

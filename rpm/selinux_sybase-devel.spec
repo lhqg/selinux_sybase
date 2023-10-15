@@ -25,8 +25,18 @@ SELinux policy development interface for Sybase policy module.
 
 %install
 
-mkdir -p -m 0755 %{buildroot}/usr/share/selinux/devel/include/apps
-install -m 0444 %{_builddir}/se_module/sybase.if %{buildroot}/usr/share/selinux/devel/include/apps/
+mkdir -p -m 0755 %{buildroot}/usr/share/selinux/devel/include/apps %{buildroot}/usr/share/selinux/devel/include/support
+install -m 0444 %{_builddir}/se_module/sybase.if	%{buildroot}/usr/share/selinux/devel/include/apps/
+install -m 0444 %{_builddir}/se_module/sybase.spt	%{buildroot}/usr/share/selinux/devel/include/support/
+
+###################################
+
+%post
+
+if selinuxenabled
+then
+  restorecon -Fi /usr/share/selinux/devel/include/apps/sybase.if /usr/share/selinux/devel/include/support/sybase.spt
+fi
 
 ###################################
 
@@ -34,3 +44,4 @@ install -m 0444 %{_builddir}/se_module/sybase.if %{buildroot}/usr/share/selinux/
 %defattr(-,root,root,-)
 
 /usr/share/selinux/devel/include/apps/sybase.if
+/usr/share/selinux/devel/include/support/sybase.spt

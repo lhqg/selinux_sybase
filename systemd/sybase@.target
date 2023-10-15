@@ -4,8 +4,10 @@ Description=Sybase services target for %I
 Requires=multi-user.target network-online.target time-sync.target
 After=multi-user.target network-online.target time-sync.target
 
-Conflicts=sybase-shutdown@%I.target sybase-shutdown.target
+Conflicts=sybase-shutdown.target
 Conflicts=shutdown.target
+
+PartOf=sybase.target
 
 [Install]
 WantedBy=default.target

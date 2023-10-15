@@ -51,3 +51,41 @@ interface(`sybase_connect',`
 
         allow   $1_t  sybase_port_t:tcp_socket    name_connect;
 ')
+
+
+#######################################
+## <summary>
+##      This template declares file transitions for a
+##      a specific Sybase ASE server/instance
+## </summary>
+## <desc>
+##      <p>
+##      This template declares file transitions for a
+##      a specific Sybase ASE server/instance
+##      </p>
+## </desc>
+## <param name="server">
+##      <summary>
+##      The name of the Sybase ASE server/instance
+##      </summary>
+## </param>
+
+template(`sybase_server_template',`
+
+        gen_require(`
+        	attribute       sybase_db_domain;
+                
+                type            sybase_usr_t;
+                type            sybase_conf_t;
+                type            sybase_dynconf_t;
+                type            sybase_run_t;
+        ')
+
+        filetrans_add_pattern(sybase_db_domain,   sybase_usr_t,     sybase_dynconf_t, file, "$1.properties" )
+        filetrans_add_pattern(sybase_db_domain,   sybase_usr_t,     sybase_dynconf_t, file, "$1.krg" )
+        filetrans_add_pattern(sybase_db_domain,   sybase_usr_t,     sybase_dynconf_t, file, "$1.bak" )
+
+        filetrans_add_pattern(sybase_db_domain,   sybase_conf_t,    sybase_dynconf_t, file, "$1.properties" )
+        filetrans_add_pattern(sybase_db_domain,   sybase_conf_t,    sybase_dynconf_t, file, "$1.krg" )
+        filetrans_add_pattern(sybase_db_domain,   sybase_conf_t,    sybase_dynconf_t, file, "$1.bak" )
+')

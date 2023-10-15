@@ -1,0 +1,7 @@
+########################################
+#
+# Test sybase.if compilation
+#
+########################################
+
+gen_sybase_server_context(TEST)

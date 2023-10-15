@@ -60,6 +60,8 @@ then
   restorecon -RFi /{opt,srv}/sybase 
   restorecon -RFi /{lib,etc}/systemd/system/sybase*
   restorecon -RFi /var/{lib,log,run,opt,tmp}/sybase
+
+  restorecon -Fi /usr/share/selinux/packages/targeted/sybase.pp
 fi
 
 ###################################

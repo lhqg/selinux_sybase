@@ -15,7 +15,7 @@
 #
 /opt/sybase(/.*)?/conf(ig)?(/.*)?                       gen_context(system_u:object_r:sybase_conf_t,s0)
 /opt/sybase(/.*)?/[^/]+\.(env|cfg|conf|properties)  --  gen_context(system_u:object_r:sybase_conf_t,s0)
-#/opt/sybase/ASE-[^/]+/sysam/[^/]+\.properties  		--  gen_context(system_u:object_r:sybase_dynconf_t,s0)
+/opt/sybase/ASE-[^/]+/sysam/[^/]+\.properties  		--  gen_context(system_u:object_r:sybase_dynconf_t,s0)
 /opt/sybase/ASE-[^/]+/[^/]+\.(krg|bak)  			--  gen_context(system_u:object_r:sybase_dynconf_t,s0)
 /opt/sybase(/.*)?/interfaces                        --  gen_context(system_u:object_r:sybase_dynconf_t,s0)
 #

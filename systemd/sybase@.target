@@ -1,8 +1,8 @@
 [Unit]
 Description=Sybase services target for %I
 
-Requires=multi-user.target network-online.target time-sync.target
-After=multi-user.target network-online.target time-sync.target
+Requires=network-online.target time-sync.target
+After=network-online.target time-sync.target remote-fs.target
 
 Conflicts=sybase-shutdown.target
 Conflicts=shutdown.target

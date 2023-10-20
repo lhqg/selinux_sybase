@@ -1,9 +1,9 @@
 [Unit]
 Description=Sybase ASE BackupServer for %I
 
-Requires=network-online.target time-sync.target remote-fs.target
+Requires=network-online.target time-sync.target remote-fs.target sybase-env@%i.service
 Wants=sshd.service
-After=network-online.target time-sync.target remote-fs.target sshd.service
+After=network-online.target time-sync.target remote-fs.target sshd.service sybase-env@%i.service sybase-dataserver@%i.service
 
 Conflicts=sybase-shutdown.target
 Conflicts=shutdown.target
@@ -12,17 +12,20 @@ PartOf=sybase@%i.target
 
 [Service]
 Type=simple
+
 User=sybase
 Group=sybase
+
+RuntimeDirectory=sybase/env/%i
+RuntimeDirectoryPreserve=yes
+EnvironmentFile=/run/sybase/env/%i/systemd-env
 
 Environment=LANG=default
 Environment=SDsybase__BS_network_connections=15
 Environment=SDsybase__BS_server_connections=10
 
-EnvironmentFile=/opt/sybase/SYBASE.sh
-EnvironmentFile=/opt/sybase/SYBASE-%I.env
-
-WorkingDirectory=/opt/sybase/ase/install
+EnvironmentFile=-/opt/sybase/SYBASE-%I.env
+EnvironmentFile=-/srv/sybase/SYBASE-%I.env
 
 ExecStartPre=-/usr/bin/mv -n /var/log/sybase/%I/backupserver.log /var/log/sybase/%I/backupserver.log.prev
 ExecStart=/opt/sybase/ase/bin/backupserver -e/var/log/sybase/%I/backupserver.log -N${SDsybase__BS_network_connections} -C${SDsybase__BS_server_connections} -I/opt/sybase/interfaces -M/opt/sybase/ase/bin/sybmultbuf -S%I_BS

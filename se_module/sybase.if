@@ -73,19 +73,39 @@ interface(`sybase_connect',`
 template(`sybase_server_template',`
 
         gen_require(`
-        	attribute       sybase_db_domain;
+        	attribute       sybase_domain;
                 
+                type            sybase_install_t;
+
                 type            sybase_usr_t;
+                type            sybase_bin_t;
+                type            sybase_var_t;
+                type            sybase_exec_t;
                 type            sybase_conf_t;
                 type            sybase_dynconf_t;
-                type            sybase_run_t;
         ')
 
-        filetrans_add_pattern(sybase_db_domain,   sybase_usr_t,     sybase_dynconf_t, file, "$1.properties" )
-        filetrans_add_pattern(sybase_db_domain,   sybase_usr_t,     sybase_dynconf_t, file, "$1.krg" )
-        filetrans_add_pattern(sybase_db_domain,   sybase_usr_t,     sybase_dynconf_t, file, "$1.bak" )
+        filetrans_add_pattern(sybase_domain,    sybase_usr_t,     sybase_dynconf_t,     file, "$1.properties" )
+        filetrans_add_pattern(sybase_domain,    sybase_usr_t,     sybase_dynconf_t,     file, "$1.bak" )
+        filetrans_add_pattern(sybase_domain,    sybase_usr_t,     sybase_dynconf_t,     file, "$1.cfg" )
+        filetrans_add_pattern(sybase_domain,    sybase_usr_t,     sybase_dynconf_t,     file, "$1.krg" )
 
-        filetrans_add_pattern(sybase_db_domain,   sybase_conf_t,    sybase_dynconf_t, file, "$1.properties" )
-        filetrans_add_pattern(sybase_db_domain,   sybase_conf_t,    sybase_dynconf_t, file, "$1.krg" )
-        filetrans_add_pattern(sybase_db_domain,   sybase_conf_t,    sybase_dynconf_t, file, "$1.bak" )
+        filetrans_add_pattern(sybase_domain,    sybase_var_t,     sybase_dynconf_t,     file, "$1.properties" )
+        filetrans_add_pattern(sybase_domain,    sybase_var_t,     sybase_dynconf_t,     file, "$1.bak" )
+        filetrans_add_pattern(sybase_domain,    sybase_var_t,     sybase_dynconf_t,     file, "$1.cfg" )
+        filetrans_add_pattern(sybase_domain,    sybase_var_t,     sybase_dynconf_t,     file, "$1.krg" )
+        
+        filetrans_add_pattern(sybase_domain,    sybase_conf_t,    sybase_dynconf_t,     file, "$1.properties" )
+        filetrans_add_pattern(sybase_domain,    sybase_conf_t,    sybase_dynconf_t,     file, "$1.bak" )
+        filetrans_add_pattern(sybase_domain,    sybase_conf_t,    sybase_dynconf_t,     file, "$1.cfg" )
+        filetrans_add_pattern(sybase_domain,    sybase_conf_t,    sybase_dynconf_t,     file, "$1.krg" )
+        
+        filetrans_add_pattern(sybase_install_t, sybase_usr_t,     sybase_conf_t,        file, "$1_BS.hosts.allow" )
+        filetrans_add_pattern(sybase_install_t, sybase_var_t,     sybase_conf_t,        file, "$1_BS.hosts.allow" )
+        
+        filetrans_add_pattern(sybase_install_t, sybase_usr_t,     sybase_conf_t,        file, "SYBASE-$1.env" )
+        filetrans_add_pattern(sybase_install_t, sybase_var_t,     sybase_conf_t,        file, "SYBASE-$1.env" )
+        
+        filetrans_add_pattern(sybase_install_t, sybase_bin_t,     sybase_exec_t,        file, "RUN_$1" )
+        filetrans_add_pattern(sybase_install_t, sybase_bin_t,     sybase_exec_t,        file, "RUN_$1_BS" )
 ')

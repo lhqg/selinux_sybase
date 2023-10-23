@@ -15,7 +15,7 @@ RC=0
 
 if selinuxenabled
 then
-  restorecon -RFi /{opt,srv}/sybase 
+  restorecon -RFi /{opt,srv,home}/sybase 
   restorecon -RFi /{lib,etc}/systemd/system/sybase*
   restorecon -RFi /var/{lib,log,run,tmp,opt}/sybase
 else

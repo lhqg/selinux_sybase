@@ -1,0 +1,22 @@
+[Unit]
+Description=Sybase environment settings for %I
+
+PartOf=sybase@%i.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=Yes
+
+User=sybase
+Group=sybase
+
+RuntimeDirectory=sybase/env/%i
+RuntimeDirectoryPreserve=yes
+
+Environment=SD_SYBASE_ROOT=/opt/sybase
+
+ExecStartPre=/usr/bin/test -n "${SD_SYBASE_ROOT}" -a -d "${SD_SYBASE_ROOT}" -a -r "${SD_SYBASE_ROOT}/SYBASE.env"
+ExecStart=/usr/share/sybase-systemd/mksetenv
+
+[Install]
+WantedBy=sybase@%i.target

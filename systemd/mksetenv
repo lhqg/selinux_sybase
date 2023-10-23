@@ -1,0 +1,39 @@
+#!/bin/bash
+
+RC=0
+
+if [ -n "${SD_SYBASE_ROOT}" -a -d "${SD_SYBASE_ROOT}" -a "${RUNTIME_DIRECTORY}" -a -d "${RUNTIME_DIRECTORY}" ]
+then
+	SYBASE_ENV=${SD_SYBASE_ROOT}/SYBASE.env
+
+	OUTPUT=${RUNTIME_DIRECTORY}/systemd-env
+	OUTPUT_tmp=${OUTPUT}.$$
+
+	if [ -r ${SYBASE_ENV} ]
+	then
+		. ${SYBASE_ENV}
+		for var in $( grep -Ei '^[[:alpha:]]([[:alnum:]]|_)+=' ${SYBASE_ENV} | sed 's/=.*$//' | sort -u )
+		do
+			echo "${var}=${!var}" >> ${OUTPUT_tmp}
+			RC=$(( $R + $? ))
+		done
+		RC=$(( $R + $? ))
+
+		if [ $RC -eq 0 -a -s ${OUTPUT_tmp} ]
+		then
+			cat ${OUTPUT_tmp} > ${OUTPUT}
+			RC=$(( $R + $? ))
+		fi
+
+		rm -f ${OUTPUT_tmp} > /dev/null 2>&1
+	else
+		RC=1
+		echo "FATAL: Unable to read ${SYBASE_ENV}."
+	fi
+else
+	RC=1
+	echo "FATAL: variable SD_SYBASE_ROOT is not set."
+fi
+
+
+exit $RC

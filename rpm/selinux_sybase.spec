@@ -57,7 +57,7 @@ semodule -i /usr/share/selinux/packages/targeted/sybase.pp
 
 if selinuxenabled
 then
-  restorecon -RFi /{opt,srv}/sybase 
+  restorecon -RFi /{opt,srv,home}/sybase 
   restorecon -RFi /{lib,etc}/systemd/system/sybase*
   restorecon -RFi /var/{lib,log,run,opt,tmp}/sybase
 

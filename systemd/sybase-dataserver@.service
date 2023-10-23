@@ -1,9 +1,9 @@
 [Unit]
 Description=Sybase ASE DataServer for %I
 
-Requires=network-online.target time-sync.target remote-fs.target
+Requires=network-online.target time-sync.target remote-fs.target sybase-env@%i.service
 Wants=sshd.service
-After=network-online.target time-sync.target remote-fs.target sshd.service
+After=network-online.target time-sync.target remote-fs.target sshd.service sybase-env@%i.service
 
 Conflicts=sybase-shutdown.target
 Conflicts=shutdown.target
@@ -16,15 +16,17 @@ Type=simple
 User=sybase
 Group=sybase
 
+RuntimeDirectory=sybase/env/%i
+RuntimeDirectoryPreserve=yes
+EnvironmentFile=/run/sybase/env/%i/systemd-env
+
 Environment=LANG=default
-Environment=SYB_DS_master_dev="{{ sybase_dataserver_master_dev }}"
 
-EnvironmentFile=/opt/sybase/SYBASE.sh
 EnvironmentFile=-/opt/sybase/SYBASE-%I.env
-
-WorkingDirectory=/opt/sybase/ase/install
+EnvironmentFile=-/srv/sybase/SYBASE-%I.env
 
 ExecStartPre=-/usr/bin/mv -n /var/log/sybase/%I/dataserver.log /var/log/sybase/%I/dataserver.log.prev
+ExecStartPre=/usr/bin/test -n "${SYB_DS_master_dev}"
 ExecStart=/opt/sybase/ase/bin/dataserver -d${SYB_DS_master_dev} -e/var/log/sybase/%I/dataserver.log -c/opt/sybase/ase/%I.cfg -M/opt/sybase/ase -N/opt/sybase/ase/sysam/%I.properties -i/opt/sybase -s%I
 
 TimeoutStartSec=240s

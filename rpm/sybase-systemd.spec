@@ -26,8 +26,10 @@ Definitions of systemd units for Sybase ASE.
 %install
 
 mkdir -p -m 0755 %{buildroot}/%{_docdir}/%{name}/examples
+mkdir -p -m 0755 %{buildroot}/usr/share/%{name}
 mkdir -p -m 0755 %{buildroot}/usr/lib/systemd/system
 
+install -m 0444 %{_builddir}/systemd/sybase-env@.service %{buildroot}/usr/lib/systemd/system/
 install -m 0444 %{_builddir}/systemd/sybase-dataserver@.service %{buildroot}/usr/lib/systemd/system/
 install -m 0444 %{_builddir}/systemd/sybase-backupserver@.service %{buildroot}/usr/lib/systemd/system/
 install -m 0444 %{_builddir}/systemd/sybase@.target %{buildroot}/usr/lib/systemd/system/
@@ -35,6 +37,7 @@ install -m 0444 %{_builddir}/systemd/sybase.target %{buildroot}/usr/lib/systemd/
 install -m 0444 %{_builddir}/systemd/sybase-shutdown.target %{buildroot}/usr/lib/systemd/system/
 
 install -m 0444 %{_builddir}/systemd/env.SAMPLE %{buildroot}/%{_docdir}/%{name}/examples/
+install -m 0555 %{_builddir}/systemd/mksetenv %{buildroot}/usr/share/%{name}/mksetenv
 
 ###################################
 
@@ -60,12 +63,16 @@ systemctl daemon-reload
 %files
 %defattr(-,root,root,-)
 
+/usr/lib/systemd/system/sybase-env@.service
 /usr/lib/systemd/system/sybase-dataserver@.service
 /usr/lib/systemd/system/sybase-backupserver@.service
 /usr/lib/systemd/system/sybase@.target
 /usr/lib/systemd/system/sybase.target
 /usr/lib/systemd/system/sybase-shutdown.target
   
+%dir /usr/share/%{name}
+/usr/share/%{name}/mksetenv
+
 %dir		%{_docdir}/%{name}
 %doc		%{_docdir}/%{name}/examples/env.SAMPLE
 

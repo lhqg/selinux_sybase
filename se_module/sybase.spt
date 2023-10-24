@@ -20,14 +20,14 @@ define(`gen_sybase_server_context', `
 /opt/sybase/ASE-[^/]+/sysam/$1\.properties		--  gen_context(system_u:object_r:sybase_dynconf_t,s0)
 /opt/sybase/ASE-[^/]+/$1\.(krg|bak)				--  gen_context(system_u:object_r:sybase_dynconf_t,s0)        
 /opt/sybase/ASE-[^/]+/$1\.(krg|bak)				--  gen_context(system_u:object_r:sybase_dynconf_t,s0)        
-/opt/sybase/ASE-[^/]+/$1\.[0-9]+				--  gen_context(system_u:object_r:sybase_dynconf_t,s0)        
+/opt/sybase/ASE-[^/]+/$1\.[0-9]{8,}				--  gen_context(system_u:object_r:sybase_dynconf_t,s0)        
 /opt/sybase/ASE-[^/]+/install/RUN_$1(_[A-Z]*)?	--	gen_context(system_u:object_r:sybase_exec_t,s0)
 /opt/sybase(/.*)?/$1_BS\.hosts.allow			--	gen_context(system_u:object_r:sybase_conf_t,s0)
 
 /srv/sybase/ASE-[^/]+/sysam/$1\.properties		--  gen_context(system_u:object_r:sybase_dynconf_t,s0)
 /srv/sybase/ASE-[^/]+/$1\.(krg|bak)				--  gen_context(system_u:object_r:sybase_dynconf_t,s0)        
 /srv/sybase/ASE-[^/]+/$1\.(krg|bak)				--  gen_context(system_u:object_r:sybase_dynconf_t,s0)        
-/srv/sybase/ASE-[^/]+/$1\.[0-9]+				--  gen_context(system_u:object_r:sybase_dynconf_t,s0)        
+/srv/sybase/ASE-[^/]+/$1\.[0-9]{8,}				--  gen_context(system_u:object_r:sybase_dynconf_t,s0)        
 /srv/sybase/ASE-[^/]+/install/RUN_$1(_[A-Z]*)?	--	gen_context(system_u:object_r:sybase_exec_t,s0)
 /srv/sybase(/.*)?/$1_BS\.hosts.allow			--	gen_context(system_u:object_r:sybase_conf_t,s0)
 

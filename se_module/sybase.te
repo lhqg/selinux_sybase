@@ -429,10 +429,10 @@ filetrans_add_pattern(sybase_domain,    sybase_var_t,  sybase_dynconf_t,   file,
 delete_files_pattern(sybase_domain, sybase_var_t, sybase_dynconf_t)
 
 # File transition are not allowed in conditional statements...
-type_transition    sybase_t    sybase_usr_t:file    sybase_dynconf_t    ".rules"
-type_transition    sybase_t    sybase_usr_t:file    sybase_dynconf_t    "dumphist"
-type_transition    sybase_t    sybase_usr_t:file    sybase_dynconf_t    "interfaces"
-type_transition    sybase_t    sybase_usr_t:file    sybase_dynconf_t    "interf.old"
+type_transition    sybase_t    sybase_usr_t:file    sybase_dynconf_t    ".rules";
+type_transition    sybase_t    sybase_usr_t:file    sybase_dynconf_t    "dumphist";
+type_transition    sybase_t    sybase_usr_t:file    sybase_dynconf_t    "interfaces";
+type_transition    sybase_t    sybase_usr_t:file    sybase_dynconf_t    "interf.old";
 
 if (sybase_allow_usr_writes) {
     create_files_pattern(sybase_t,    sybase_usr_t,   sybase_dynconf_t);

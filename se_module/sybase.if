@@ -93,10 +93,10 @@ template(`sybase_server_template',`
 
         # These transition will only work when boolean allow_sybase_usr_writes is True
         # but file transition are not allowed in conditional statements...
-        type_transition    sybase_t    sybase_usr_t:file    sybase_dynconf_t    "$1.properties"
-        type_transition    sybase_t    sybase_usr_t:file    sybase_dynconf_t    "$1.bak"
-        type_transition    sybase_t    sybase_usr_t:file    sybase_dynconf_t    "$1.cfg"
-        type_transition    sybase_t    sybase_usr_t:file    sybase_dynconf_t    "$1.krg"
+        type_transition    sybase_t    sybase_usr_t:file    sybase_dynconf_t    "$1.properties";
+        type_transition    sybase_t    sybase_usr_t:file    sybase_dynconf_t    "$1.bak";
+        type_transition    sybase_t    sybase_usr_t:file    sybase_dynconf_t    "$1.cfg";
+        type_transition    sybase_t    sybase_usr_t:file    sybase_dynconf_t    "$1.krg";
 
         filetrans_add_pattern(sybase_domain,    sybase_var_t,     sybase_dynconf_t,     file, "$1.properties" )
         filetrans_add_pattern(sybase_domain,    sybase_var_t,     sybase_dynconf_t,     file, "$1.bak" )

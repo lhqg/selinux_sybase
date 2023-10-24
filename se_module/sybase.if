@@ -76,6 +76,7 @@ template(`sybase_server_template',`
         	attribute       sybase_domain;
                 
                 type            sybase_install_t;
+                type            sybase_t;
 
                 type            sybase_usr_t;
                 type            sybase_bin_t;
@@ -85,10 +86,17 @@ template(`sybase_server_template',`
                 type            sybase_dynconf_t;
         ')
 
-        filetrans_add_pattern(sybase_domain,    sybase_usr_t,     sybase_dynconf_t,     file, "$1.properties" )
-        filetrans_add_pattern(sybase_domain,    sybase_usr_t,     sybase_dynconf_t,     file, "$1.bak" )
-        filetrans_add_pattern(sybase_domain,    sybase_usr_t,     sybase_dynconf_t,     file, "$1.cfg" )
-        filetrans_add_pattern(sybase_domain,    sybase_usr_t,     sybase_dynconf_t,     file, "$1.krg" )
+        filetrans_add_pattern(sybase_install_t,    sybase_usr_t,     sybase_dynconf_t,     file, "$1.properties" )
+        filetrans_add_pattern(sybase_install_t,    sybase_usr_t,     sybase_dynconf_t,     file, "$1.bak" )
+        filetrans_add_pattern(sybase_install_t,    sybase_usr_t,     sybase_dynconf_t,     file, "$1.cfg" )
+        filetrans_add_pattern(sybase_install_t,    sybase_usr_t,     sybase_dynconf_t,     file, "$1.krg" )
+
+        if (sybase_allow_usr_writes) {
+                filetrans_add_pattern(sybase_t,    sybase_usr_t,     sybase_dynconf_t,     file, "$1.properties" )
+                filetrans_add_pattern(sybase_t,    sybase_usr_t,     sybase_dynconf_t,     file, "$1.bak" )
+                filetrans_add_pattern(sybase_t,    sybase_usr_t,     sybase_dynconf_t,     file, "$1.cfg" )
+                filetrans_add_pattern(sybase_t,    sybase_usr_t,     sybase_dynconf_t,     file, "$1.krg" )
+        }
 
         filetrans_add_pattern(sybase_domain,    sybase_var_t,     sybase_dynconf_t,     file, "$1.properties" )
         filetrans_add_pattern(sybase_domain,    sybase_var_t,     sybase_dynconf_t,     file, "$1.bak" )

@@ -435,9 +435,9 @@ type_transition    sybase_t    sybase_usr_t:file    sybase_dynconf_t    "interfa
 type_transition    sybase_t    sybase_usr_t:file    sybase_dynconf_t    "interf.old";
 
 if (sybase_allow_usr_writes) {
-    create_files_pattern(sybase_t,    sybase_usr_t,   sybase_dynconf_t);
-    write_files_pattern(sybase_t,     sybase_usr_t,   sybase_dynconf_t);
-    delete_files_pattern(sybase_t,    sybase_usr_t,   sybase_dynconf_t);
+    create_files_pattern(sybase_t,    sybase_usr_t,   sybase_dynconf_t)
+    write_files_pattern(sybase_t,     sybase_usr_t,   sybase_dynconf_t)
+    delete_files_pattern(sybase_t,    sybase_usr_t,   sybase_dynconf_t)
 }
 
 ########################################

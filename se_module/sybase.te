@@ -426,7 +426,7 @@ filetrans_add_pattern(sybase_domain,    sybase_var_t,  sybase_dynconf_t,   file,
 filetrans_add_pattern(sybase_domain,    sybase_var_t,  sybase_dynconf_t,   file,   "interfaces" )
 filetrans_add_pattern(sybase_domain,    sybase_var_t,  sybase_dynconf_t,   file,   "interf.old" )
 
-delete_file_patterns(sybase_domain, sybase_var_t, sybase_dynconf_t)
+delete_files_pattern(sybase_domain, sybase_var_t, sybase_dynconf_t)
 
 if (sybase_allow_usr_writes) {
     filetrans_add_pattern(sybase_t,    sybase_usr_t,    sybase_dynconf_t,    file,    ".rules" )
@@ -434,7 +434,7 @@ if (sybase_allow_usr_writes) {
     filetrans_add_pattern(sybase_t,    sybase_usr_t,    sybase_dynconf_t,    file,    "interfaces" )
     filetrans_add_pattern(sybase_t,    sybase_usr_t,    sybase_dynconf_t,    file,    "interf.old" )
 
-    delete_file_patterns(sybase_t, sybase_usr_t, sybase_dynconf_t);
+    delete_files_pattern(sybase_t, sybase_usr_t, sybase_dynconf_t);
 }
 
 ########################################

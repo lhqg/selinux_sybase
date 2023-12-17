@@ -1,4 +1,4 @@
-policy_module(sybase, 0.6.0)
+policy_module(sybase, 0.7.0)
 
 ########################################
 #
@@ -60,6 +60,7 @@ type sybase_run_t;
 type sybase_tmp_t;
 type sybase_log_t;
 type sybase_db_t;
+type sybase_device_t;
 
 type sybase_install_exec_t;
 type sybase_install_tmp_t;
@@ -156,6 +157,9 @@ typeattribute sybase_log_t sybase_file_type;
 files_type(sybase_db_t)
 typeattribute sybase_db_t sybase_db_type;
 
+dev_node(sybase_device_t)
+typeattribute sybase_device_t sybase_db_type;
+
 systemd_unit_file(sybase_unit_file_t);
 
 corenet_port(sybase_port_t)
@@ -247,6 +251,8 @@ allow sybase_domain  sybase_log_t:file              { create_file_perms append_f
 allow sybase_t  sybase_db_type:dir          rw_dir_perms;
 allow sybase_t  sybase_db_type:file         manage_file_perms;
 allow sybase_t  sybase_db_type:lnk_file     manage_lnk_file_perms;
+allow sybase_t  sybase_db_type:chr_file     rw_chr_file_perms;
+allow sybase_t  sybase_db_type:blk_file     rw_blk_file_perms;
 
 allow sybase_t  sybase_port_type:tcp_socket { name_bind name_connect };
 
@@ -279,6 +285,8 @@ allow sybase_install_t  sybase_file_type:sock_file  manage_sock_file_perms;
 
 allow sybase_install_t  sybase_db_type:dir          { list_dir_perms create_dir_perms add_entry_dir_perms };
 allow sybase_install_t  sybase_db_type:file         getattr_file_perms;
+allow sybase_install_t  sybase_db_type:chr_file     getattr_chr_file_perms;
+allow sybase_install_t  sybase_db_type:blk_file     getattr_blk_file_perms;
 allow sybase_install_t  sybase_db_type:lnk_file     read_lnk_file_perms;
 
 allow sybase_install_t  sybase_port_t:tcp_socket    name_connect;
@@ -314,6 +322,8 @@ allow confined_admindomain  sybase_file_type:sock_file  getattr_sock_file_perms;
 allow confined_admindomain  sybase_db_type:dir          list_dir_perms;
 allow confined_admindomain  sybase_db_type:file         getattr_file_perms;
 allow confined_admindomain  sybase_db_type:lnk_file     read_lnk_file_perms;
+allow confined_admindomain  sybase_db_type:chr_file     getattr_chr_file_perms;
+allow confined_admindomain  sybase_db_type:blk_file     getattr_blk_file_perms;
 
 allow confined_admindomain  sybase_conf_t:file          read_file_perms;
 allow confined_admindomain  sybase_dynconf_t:file       read_file_perms;
@@ -340,6 +350,10 @@ allow dbadm_t sybase_var_t:dir            manage_dir_perms;
 allow dbadm_t sybase_var_t:file           manage_file_perms;
 allow dbadm_t sybase_var_t:lnk_file       manage_lnk_file_perms;
 
+allow dbadm_t sybase_db_type:dir          create_dir_perms;
+allow dbadm_t sybase_db_type:chr_file     create_chr_file_perms;
+allow dbadm_t sybase_db_type:blk_file     create_blk_file_perms;
+
 allow dbadm_t sybase_tmp_t:dir            manage_dir_perms;
 allow dbadm_t sybase_tmp_t:file           manage_file_perms;
 allow dbadm_t sybase_tmp_t:lnk_file       manage_lnk_file_perms;
@@ -352,6 +366,10 @@ allow dbadm_t sybase_port_type:tcp_socket name_connect;
 
 allow dbadm_t   sybase_unit_file_t:file     read_file_perms;
 allow dbadm_t   sybase_unit_file_t:service  manage_service_perms;
+
+allow sysadm_t  sybase_db_type:dir          create_dir_perms;
+allow sysadm_t  sybase_db_type:chr_file     { create_chr_file_perms relabelto_chr_file_perms };
+allow sysadm_t  sybase_db_type:blk_file     { create_blk_file_perms relabelto_blk_file_perms };
 
 allow sysadm_t  sybase_unit_file_t:file     read_file_perms;
 allow sysadm_t  sybase_unit_file_t:service  manage_service_perms;

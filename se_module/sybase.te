@@ -18,6 +18,7 @@ gen_require(`
     type        unconfined_service_t;
     type        initrc_t;
     type        init_t;
+    type        udev_t;
     
     type        sysadm_t;
     type        dbadm_t;
@@ -25,6 +26,7 @@ gen_require(`
     type        tmpfs_t;
     type        locale_t;
     type        user_home_dir_t;
+    type        device_t;
 
     role        unconfined_r;
     role        dbadm_r;
@@ -292,7 +294,7 @@ allow sybase_install_t  sybase_db_type:lnk_file     read_lnk_file_perms;
 allow sybase_install_t  sybase_port_t:tcp_socket    name_connect;
 
 #
-##
+## Persmission for Sybase processes on SEM/SHM, processes...
 #
 
 allow sybase_domain  self:process           { execmem setrlimit };
@@ -458,6 +460,16 @@ if (sybase_allow_usr_writes) {
     write_files_pattern(sybase_t,     sybase_usr_t,   sybase_dynconf_t)
     delete_files_pattern(sybase_t,    sybase_usr_t,   sybase_dynconf_t)
 }
+
+
+########################################
+#
+# Permissions for udev
+#
+########################################
+
+filetrans_add_pattern(udev_t,   device_t,           sybase_device_t,  dir,   "sybase" )
+filetrans_pattern(udev_t,       sybase_device_t,    sybase_device_t,  { dir file lnk_file chr_file blk_file})
 
 ########################################
 #

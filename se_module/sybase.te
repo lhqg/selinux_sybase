@@ -467,6 +467,7 @@ if (sybase_allow_usr_writes) {
 # Permissions for udev
 #
 ########################################
+dev_associate(sybase_device_t)
 
 filetrans_add_pattern(udev_t,   device_t,           sybase_device_t,  dir,   "sybase" )
 filetrans_pattern(udev_t,       sybase_device_t,    sybase_device_t,  { dir file lnk_file chr_file blk_file})

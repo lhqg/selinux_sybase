@@ -1,0 +1,16 @@
+#
+# udev rules for Sybase raw devices
+#
+
+# Create the /dev/sybase if necessary
+ACTION=="add", ENV{DEVTYPE}=="disk", TEST!="/dev/sybase", \
+				RUN+="/bin/mkdir -m 0755 /dev/sybase", \
+				RUN+="/bin/chown sybase:sybase /dev/sybase"
+
+# Create or remove the character special file for DM-LVM device when its name starts with "sybase_dev_"
+ACTION=="add|change", ENV{DEVTYPE}=="disk", ENV{DM_UUID}=="LVM-*", ENV{DM_LV_NAME}=="sybase_dev_*", \
+				TEST!="/dev/sybase/$env{DM_VG_NAME}-$env{DM_LV_NAME}", \
+				RUN+="/bin/mknod -m 0644 /dev/sybase/$env{DM_VG_NAME}-$env{DM_LV_NAME} c %M %m", \
+				RUN+="/bin/chown sybase:sybase /dev/sybase/$env{DM_VG_NAME}-$env{DM_LV_NAME}"
+ACTION=="remove", ENV{DEVTYPE}=="disk", ENV{DM_UUID}=="LVM-*", ENV{DM_LV_NAME}=="sybase_dev_*", \
+				RUN+="/bin/rm -f /dev/sybase/$env{DM_VG_NAME}-$env{DM_LV_NAME}"

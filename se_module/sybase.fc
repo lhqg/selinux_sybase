@@ -6,6 +6,8 @@
 /var/lib/sybase(/.*)?											gen_context(system_u:object_r:sybase_var_t,s0)
 /var/log/sybase(/.*)?											gen_context(system_u:object_r:sybase_log_t,s0)
 /run/sybase(/.*)?												gen_context(system_u:object_r:sybase_run_t,s0)
+/dev/sybase/.*												-b  gen_context(system_u:object_r:sybase_device_t,s0)
+/dev/sybase/.*												-c  gen_context(system_u:object_r:sybase_device_t,s0)
 #
 /opt/sybase(/.*)?/bin(32|64)?(/.*)?								gen_context(system_u:object_r:sybase_bin_t,s0)
 /opt/sybase(/.*)?/scripts(/.*)?									gen_context(system_u:object_r:sybase_bin_t,s0)

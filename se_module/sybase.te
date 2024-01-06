@@ -254,7 +254,6 @@ allow sybase_t  sybase_db_type:dir          rw_dir_perms;
 allow sybase_t  sybase_db_type:file         manage_file_perms;
 allow sybase_t  sybase_db_type:lnk_file     manage_lnk_file_perms;
 allow sybase_t  sybase_db_type:chr_file     rw_chr_file_perms;
-allow sybase_t  sybase_db_type:blk_file     rw_blk_file_perms;
 
 allow sybase_t  sybase_port_type:tcp_socket { name_bind name_connect };
 
@@ -354,7 +353,6 @@ allow dbadm_t sybase_var_t:lnk_file       manage_lnk_file_perms;
 
 allow dbadm_t sybase_db_type:dir          create_dir_perms;
 allow dbadm_t sybase_db_type:chr_file     create_chr_file_perms;
-allow dbadm_t sybase_db_type:blk_file     create_blk_file_perms;
 
 allow dbadm_t sybase_tmp_t:dir            manage_dir_perms;
 allow dbadm_t sybase_tmp_t:file           manage_file_perms;
@@ -371,7 +369,6 @@ allow dbadm_t   sybase_unit_file_t:service  manage_service_perms;
 
 allow sysadm_t  sybase_db_type:dir          create_dir_perms;
 allow sysadm_t  sybase_db_type:chr_file     { create_chr_file_perms relabelto_chr_file_perms };
-allow sysadm_t  sybase_db_type:blk_file     { create_blk_file_perms relabelto_blk_file_perms };
 
 allow sysadm_t  sybase_unit_file_t:file     read_file_perms;
 allow sysadm_t  sybase_unit_file_t:service  manage_service_perms;

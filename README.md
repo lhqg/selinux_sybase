@@ -1,3 +1,9 @@
+![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/hubertqc/selinux_sybase)
+[![License](https://img.shields.io/badge/License-GPL%203--Clause-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.html)
+[![GitHub issues](https://img.shields.io/github/issues/hubertqc/selinux_sybase)](https://github.com/hubertqc/selinux_sybase/issues)
+[![GitHub commit activity](https://img.shields.io/github/commit-activity/y/hubertqc/selinux_sybase)](https://github.com/hubertqc/selinux_sybase/commits/main)
+[![GitHub last commit](https://img.shields.io/github/last-commit/hubertqc/selinux_sybase)](https://github.com/hubertqc/selinux_sybase/commits/main)
+
 # SElinux policy module for Sybase ASE
 
 <https://github.com/hubertqc/selinux_sybase>

@@ -34,7 +34,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - uses: lhqg/selinux_compile@el7
+      - uses: lhqg/selinux_compile@centos7
 
   compile_el8:
     name: Validate SELinux code (EL 8)
@@ -51,7 +51,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - uses: lhqg/selinux_compile@el9
+      - uses: lhqg/selinux_compile@centos9
 
   compile_fedora36:
     name: Validate SELinux code (Fedora 36)

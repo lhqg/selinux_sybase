@@ -1,6 +1,6 @@
 How to Submit Patches to the SELinux Sybase Project
 ===============================================================================
-https://github.com/hubertqc/selinux_sybase
+https://github.com/lhqg/selinux_sybase
 
 This document is intended to act as a guide to help you contribute to the
 SELinux Sybase project.

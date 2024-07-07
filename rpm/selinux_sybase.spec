@@ -2,8 +2,8 @@ Name:		sybase-selinux
 Version:	%{_provided_version}
 Release:	%{_provided_release}%{?dist}
 Summary:	SELinux policy module for Sybase ASE
-License:	GPLv2
-URL:		https://github.com/hubertqc/selinux_sybase
+License:	GPLv3
+URL:		https://github.com/lhqg/selinux_sybase
 #Source:	%{name}-%{version}.tar.gz
 BuildArch:	noarch
 

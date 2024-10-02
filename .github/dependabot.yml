@@ -15,13 +15,3 @@ updates:
       - "hubertqc"
     reviewers:
       - "Laurent-Gaillard"
-  - package-ecosystem: "docker"
-    directory: "/"
-    schedule:
-      interval: "daily"
-    labels:
-      - "Dependencies"
-    assignees:
-      - "hubertqc"
-    reviewers:
-      - "Laurent-Gaillard"

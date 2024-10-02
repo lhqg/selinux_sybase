@@ -35,6 +35,7 @@ The Sybase ASE will run in the sybase_t domain.
 
 %build
 
+make -f /usr/share/selinux/devel/Makefile -C %{_builddir} clean
 make -f /usr/share/selinux/devel/Makefile -C %{_builddir} sybase.pp
 
 ###################################

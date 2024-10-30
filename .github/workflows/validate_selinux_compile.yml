@@ -61,7 +61,7 @@ jobs:
       - name: Get SELinux policy module characteristics
         id: semodule_chars
         run: |
-          if [ -f "main-semodule-file"]
+          if [ -f "main-semodule-file" ]
           then
             semodule_file=$( cat main-semodule-file )
           fi

@@ -4,8 +4,7 @@
 name: "Validate SELinux code"
 
 concurrency: 
-  group: SELinux_compile_wkf_group
-
+  group: SELinux_compile-${{ github.ref }}
 
 on:
   workflow_dispatch:
@@ -22,9 +21,6 @@ on:
       - '**.te'
       - '**.fc'
       - '**.if'
-
-env:
-  SEMODULE: sybase
 
 jobs:
 
@@ -45,61 +41,9 @@ jobs:
           distro: 'almalinux'
           distro_vers: ${{ matrix.el_vers }}
 
-#  compile_fedora:
-#    name: Compile SELinux code for Fedora family branch
-#    runs-on: ubuntu-latest
-#    strategy:
-#      matrix:
-#        fedora_vers: [ '38', '39', '40' ]
-#    steps:
-#      - name: Checkout SELinux code
-#        uses: actions/checkout@master
-#
-#      - name: Compile SELinux code
-#        uses: lhqg/selinux_compile@main
-#        with:
-#          distro: 'fedora'
-#          distro_vers: ${{ matrix.fedora_vers }}
-#
-#  compile_ubuntu:
-#    name: Compile SELinux code for Ubuntu family branch
-#    runs-on: ubuntu-latest
-#    strategy:
-#      matrix:
-#        ubuntu_vers: [ '22.04', '24.04' ]
-#    steps:
-#      - name: Checkout SELinux code
-#        uses: actions/checkout@master
-#
-#      - name: Compile SELinux code
-#        uses: lhqg/selinux_compile@main
-#        with:
-#          distro: 'ubuntu'
-#          distro_vers: ${{ matrix.ubuntu_vers }}
-#
-#  compile_debian:
-#    name: Compile SELinux code for Debian family branch
-#    runs-on: ubuntu-latest
-#    strategy:
-#      matrix:
-#        debian_vers: [ '11', '12' ]
-#    steps:
-#      - name: Checkout SELinux code
-#        uses: actions/checkout@master
-#
-#      - name: Compile SELinux code
-#        uses: lhqg/selinux_compile@main
-#        with:
-#          distro: 'debian'
-#          distro_vers: ${{ matrix.debian_vers }}
-
   semodule_info:
     name: Get SELinux module informations
-    needs:
-      - compile_el
-#      - compile_fedora
-#      - compile_ubuntu
-#      - compile_debian
+    needs: compile_el
       
     runs-on: ubuntu-latest
     
@@ -117,23 +61,42 @@ jobs:
       - name: Get SELinux policy module characteristics
         id: semodule_chars
         run: |
+          if [ -f "main-semodule-file"]
+          then
+            semodule_file=$( cat main-semodule-file )
+          fi
+
+          if [ -z "${semodule_file}" ]
+          then
+            if [ -n "${SEMODULE}" ]
+            then
+              semodule_file="se_module/${SEMODULE}.te"
+            fi
+          fi
+
+          if [ ! -f "${semodule_file}" ]
+          then
+            echo '::error title=SEmoduleNotFound::Unable to retrieve SELinux module name'
+            exit 1
+          fi
+
           awk '
-          /^[[:blank:]]*module[[:blank:]]+/ {
-            sub("[[:blank:]]*;$", "")
-            module_name=$2
-            module_vers=$3
-          }
-          /^[[:blank:]]*policy_module[[:blank:]]*\(/ {
-            sub("^[[:blank:]]*policy_module[[:blank:]]*[(][[:blank:]]*", "")
-            sub("[[:blank:]]*)[[:blank:]]*$", "")
-            split($0, a, "[[:blank:]]*,[[:blank:]]*")
-            module_name=a[1]
-            module_vers=a[2]
-          }
-          END {
-            print "semodule_name="module_name
-            print "semodule_vers="module_vers
-          }' se_module/${SEMODULE}.te >> $GITHUB_OUTPUT
+            /^[[:blank:]]*module[[:blank:]]+/ {
+              sub("[[:blank:]]*;$", "")
+              module_name=$2
+              module_vers=$3
+            }
+            /^[[:blank:]]*policy_module[[:blank:]]*\(/ {
+              sub("^[[:blank:]]*policy_module[[:blank:]]*[(][[:blank:]]*", "")
+              sub("[[:blank:]]*)[[:blank:]]*$", "")
+              split($0, a, "[[:blank:]]*,[[:blank:]]*")
+              module_name=a[1]
+              module_vers=a[2]
+            }
+            END {
+              print "semodule_name="module_name
+              print "semodule_vers="module_vers
+            }' ${semodule_file} >> $GITHUB_OUTPUT
 
   add_tag:
     name: Add SELinux module version tag on the branch
@@ -146,7 +109,14 @@ jobs:
     steps:
       - uses: actions/checkout@master
 
+      - name: Run Changelog CI
+        uses: saadmk11/changelog-ci@v1.1.2
+        with:
+          release_version: v${{ needs.semodule_info.outputs.semodule_vers }}
+          config_file: changelog-ci-config.yml
+
       - name: Tag the branch with the SELinux module version and draft a pre-release
+        id: create_release
         uses: actions/create-release@latest
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -155,4 +125,5 @@ jobs:
           release_name: Release candidate for v${{ needs.semodule_info.outputs.semodule_vers }}
           draft: true
           prerelease: true
+          body_path: CHANGELOG.md
       

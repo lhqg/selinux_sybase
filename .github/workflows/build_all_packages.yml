@@ -1,10 +1,10 @@
 #
 # SELinux policy module RPMs build
 #
-name: "Build RPM and DEB packages to install compiled SELinux policy module"
+name: "Build RPM packages to install compiled SELinux policy module"
 
 concurrency: 
-  group: SELinux_compile_wkf_group
+  group: SELinux_compile-${{ github.ref }}
 
 on:
   release:
@@ -38,29 +38,46 @@ jobs:
       - name: Retrieve version/release numbers, and previous tag
         id: get_release_version
         run: |
-          version_from_tag=$( echo "${{ github.ref_name }}" | sed -E 's,^v?([0-9]+\.[0-9]+\.[0-9]+).*$,\1,' )
-          release_from_tag=$( echo "${{ github.ref_name }}" | sed -E 's,^v?[0-9]+\.[0-9]+\.[0-9]+(-([0-9]+))?.*$,\2,' )
-          [ -z "${release_from_tag}" ] && release_from_tag=0
-          echo "version=${version_from_tag}" >> $GITHUB_OUTPUT
-          echo "release=${release_from_tag}" >> $GITHUB_OUTPUT
-          git tag | tail -2 | awk '(NR==1){print "previous_tag="$1}' >> $GITHUB_OUTPUT
+          if [ "${{ github.ref_type }}" = 'tag' ]
+          then
+            awk -F '-' 'BEGIN {v="1.0"; r="1"}
+              /v?[0-9]+(\.[0-9]+(\.[0-9]+)?)?(-[0-9]+)?$/ {
+                v=$1 ; sub("^v?", "", v)
+                if (NF==2) { r=$2 }
+              }
+              END { print "version="v ; print "release="r }' <<< '${{ github.ref_name }}' >> $GITHUB_OUTPUT
+            git tag | tail -2 | awk '(NR==1){print "previous_tag="$1}' >> $GITHUB_OUTPUT
+          else
+            if [ -f "main-semodule-file"]
+            then
+              semodule_file=$( cat main-semodule-file )
+              if [ -f "${semodule_file}" ]
+              then
+                awk '
+                  /^[[:blank:]]*module[[:blank:]]+/ {
+                    sub("[[:blank:]]*;$", "")
+                    module_vers=$3
+                  }
+                  /^[[:blank:]]*policy_module[[:blank:]]*\(/ {
+                    sub("^[[:blank:]]*policy_module[[:blank:]]*[(][[:blank:]]*", "")
+                    sub("[[:blank:]]*)[[:blank:]]*$", "")
+                    split($0, a, "[[:blank:]]*,[[:blank:]]*")
+                    module_vers=a[2]
+                  }
+                  END {
+                    print "version="module_vers
+                    print "release=1"
+                  }' ${semodule_file} >> $GITHUB_OUTPUT
+              else
+                echo '::error title=SEmoduleNotFound::Unable to retrieve SELinux module name'
+                exit 1
+              fi
+            else
+              echo '::error title=SEmoduleNotFound::Unable to retrieve SELinux module name'
+              exit 1
+            fi
+          fi
   
-#  build_Fedora:
-#    name: Build RPMs for Fedora and upload them to release
-#    needs: get_release_info
-#    uses: lhqg/build_selinux_packages/.github/workflows/build_semodule_rpm.yml@main
-#    secrets:
-#      gpg_private_key: ${{ secrets.RPM_SIGNING_KEY }}
-#      gpg_private_key_password: ${{ secrets.RPM_SIGNING_KEY_PASSWORD }}
-#    with:
-#      build_distro: fedora
-#      build_distro_versions: '[ "38", "39", "40" ]'
-#      spec_file_location: rpm/
-#      selinux_files_location: se_module/
-#      release_upload_url: ${{ needs.get_release_info.outputs.upload_url }}
-#      provided_version: ${{ needs.get_release_info.outputs.version_number }}
-#      provided_release: ${{ needs.get_release_info.outputs.release_number }}
-      
   build_EL:
     name: Build RPMs for EL and upload them to release
     needs: get_release_info
@@ -68,57 +85,26 @@ jobs:
     secrets:
       gpg_private_key: ${{ secrets.RPM_SIGNING_KEY }}
       gpg_private_key_password: ${{ secrets.RPM_SIGNING_KEY_PASSWORD }}
+      sftp_password: ${{ secrets.SSH_OVH_PASSWORD }}
     with:
       build_distro: almalinux
       build_distro_versions: '[ "8", "9" ]'
       spec_file_location: rpm/
-      selinux_files_location: se_module/
       release_upload_url: ${{ needs.get_release_info.outputs.upload_url }}
       provided_version: ${{ needs.get_release_info.outputs.version_number }}
       provided_release: ${{ needs.get_release_info.outputs.release_number }}
+      sftp_server: ${{ vars.SSH_OVH_HOST }}
+      sftp_user: ${{ vars.SSH_OVH_USER }}
+      sftp_remote_path: www/repo/public/el 
       
-#  build_Debian:
-#    name: Build Debian packages and upload them to release
-#    needs: get_release_info
-#    uses: lhqg/build_selinux_packages/.github/workflows/build_semodule_deb.yml@main
-#    secrets:
-#      gpg_private_key: ${{ secrets.DEB_SIGNING_KEY }}
-#      gpg_private_key_password: ${{ secrets.DEB_SIGNING_KEY_PASSWORD }}
-#    with:
-#      build_distro: debian
-#      build_distro_versions: '[ "11", "12" ]'
-#      build_material_dir: dpkg
-#      release_upload_url: ${{ needs.get_release_info.outputs.upload_url }}
-#      package_version: ${{ needs.get_release_info.outputs.version_number }}-${{ needs.get_release_info.outputs.release_number }}
-#      previous_tag: ${{ needs.get_release_info.outputs.previous_tag }}
-#      
-#  build_Ubuntu:
-#    name: Build Ubuntu packages and upload them to release
-#    needs: get_release_info
-#    uses: lhqg/build_selinux_packages/.github/workflows/build_semodule_deb.yml@main
-#    secrets:
-#      gpg_private_key: ${{ secrets.DEB_SIGNING_KEY }}
-#      gpg_private_key_password: ${{ secrets.DEB_SIGNING_KEY_PASSWORD }}
-#    with:
-#      build_distro: ubuntu
-#      build_distro_versions: '[ "22.04", "24.04" ]'
-#      build_material_dir: dpkg
-#      release_upload_url: ${{ needs.get_release_info.outputs.upload_url }}
-#      package_version: ${{ needs.get_release_info.outputs.version_number }}-${{ needs.get_release_info.outputs.release_number }}
-#      previous_tag: ${{ needs.get_release_info.outputs.previous_tag }}
-
   all_green:
     name: All jobs successful
     if: ${{ always() }}
     needs:
       - build_EL
-#      - build_Fedora
-#      - build_Debian
-#      - build_Ubuntu
     runs-on: ubuntu-latest
     steps:
       - name: Synthetize results
         run: |
           grep -Eqv 'failure' <<< '${{ needs.build_EL.result }}' 
-#          grep -Eqv 'failure' <<< '${{ needs.build_EL.result }},${{ needs.build_Fedora.result }},${{ needs.build_Debian.result }},${{ needs.build_Ubuntu.result }}' 
     

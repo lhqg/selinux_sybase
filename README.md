@@ -8,7 +8,7 @@
 
 # SElinux policy module for Sybase ASE
 
-<https://github.com/lhqg/selinux_sybase>
+Maintained and provided as a community contribution by [LHQG](https://www.lhqg.fr/).
 
 ## Table of Contents
 

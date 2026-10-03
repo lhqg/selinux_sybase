@@ -23,7 +23,7 @@
 #
 ############################################################################
 
-policy_module(sybase, 0.7.0)
+policy_module(sybase, 0.8.0)
 
 ########################################
 #
@@ -47,6 +47,8 @@ gen_require(`
     
     type        sysadm_t;
     type        dbadm_t;
+    type        logadm_t;
+    type        secadm_t;
 
     type        tmpfs_t;
     type        locale_t;
@@ -360,6 +362,7 @@ allow confined_admindomain  sybase_bin_t:file           exec_file_perms;
 allow confined_admindomain  sybase_lib_t:file           read_file_perms;
 allow confined_admindomain  sybase_log_t:file           read_file_perms;
 
+# DB admins
 allow dbadm_t sybase_auth_t:dir           list_dir_perms;
 allow dbadm_t sybase_auth_t:file          getattr_file_perms;
 allow dbadm_t sybase_auth_t:lnk_file      read_lnk_file_perms;
@@ -392,11 +395,38 @@ allow dbadm_t sybase_port_type:tcp_socket name_connect;
 allow dbadm_t   sybase_unit_file_t:file     read_file_perms;
 allow dbadm_t   sybase_unit_file_t:service  manage_service_perms;
 
+# sysadmins
 allow sysadm_t  sybase_db_type:dir          create_dir_perms;
 allow sysadm_t  sybase_db_type:chr_file     { create_chr_file_perms relabelto_chr_file_perms };
 
 allow sysadm_t  sybase_unit_file_t:file     read_file_perms;
 allow sysadm_t  sybase_unit_file_t:service  manage_service_perms;
+
+# log admins
+
+allow logadm_t	sybase_file_type:dir					search_dir_perms;
+allow logadm_t	sybase_file_type:notdevfile_class_set	getattr;
+allow logadm_t	sybase_db_type:notdevfile_class_set	    getattr;
+
+allow logadm_t	sybase_log_t:dir		{ list_dir_perms del_entry_dir_perms delete_dir_perms create_dir_perms reparent };
+allow logadm_t	sybase_log_t:file		{ delete_file_perms rename_file_perms };
+
+allow logadm_t  sybase_unit_file_t:file     read_file_perms;
+allow logadm_t  sybase_unit_file_t:service  status;
+
+filetrans_add_pattern(logadm_t,	sybase_log_t, sybase_log_t, dir)
+
+# security admins
+
+allow secadm_t	sybase_file_type:dir					list_dir_perms;
+allow secadm_t	sybase_db_type:dir					    list_dir_perms;
+allow secadm_t	sybase_file_type:notdevfile_class_set	{ getattr setattr relabelto };
+allow secadm_t	sybase_db_type:notdevfile_class_set 	{ getattr setattr relabelto };
+allow secadm_t  sybase_db_type:chr_file                 { getattr setattr relabelto_chr_file_perms };
+allow secadm_t	sybase_file_type:lnk_file				read_lnk_file_perms;
+
+allow secadm_t  sybase_unit_file_t:file     read_file_perms;
+allow secadm_t  sybase_unit_file_t:service  status;
 
 ########################################
 #
